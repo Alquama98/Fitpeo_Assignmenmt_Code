@@ -1,0 +1,55 @@
+package com.fitpeo;
+
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.WheelInput.ScrollOrigin;
+
+public class AutomationTesterAssignment_FitPeo {
+	
+	public static void main(String[] args) throws InterruptedException {
+		WebDriver driver = new ChromeDriver(); 
+		driver.manage().window().maximize(); // maximizing window.
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20)); // implicit wait.
+		Actions mouseKeyboardAction = new Actions(driver);
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		
+		driver.get("https://www.fitpeo.com/"); // task 1
+	//	driver.navigate().to("https://www.fitpeo.com/"); alternate way for navigating to fitpeo homepage.
+		
+		driver.findElement(By.xpath("//div[text()='Revenue Calculator']")).click(); // task 2
+		jse.executeScript("arguments[0].scrollIntoView(false)", driver.findElement(By.xpath("//p[text()='CPT-99454']"))); // task 3
+		WebElement revenueCalculatorSlider = driver.findElement(By.cssSelector("input[type=\"range\"]"));
+		for( ; ; ) // task 4
+		{
+			if(revenueCalculatorSlider.getAttribute("value").contains("820")) 
+					break;
+			else
+				revenueCalculatorSlider.sendKeys(Keys.ARROW_RIGHT);
+		}
+		Thread.sleep(3000);
+		jse.executeScript("arguments[0].value='560'", driver.findElement(By.cssSelector("input[type=\"number\"]"))); // task 5
+		if(revenueCalculatorSlider.getAttribute("value").contains("560"))  // task 6
+			System.out.println("Revenue Calculator Slider updated to 560");
+		else
+			System.out.println("Revenue Calculator Slider not updated to 560");
+		int [] cpt = {99091,99453,99454,99474};
+		for(int valueCPT : cpt)  // task 7
+		{
+			driver.findElement(By.xpath("//p[contains(text(),'"+valueCPT+"')]/..//input[@type='checkbox']")).click();
+		}
+		if(driver.findElement(By.xpath("(//p[contains(text(),'Total Recurring')])[1]/.//p[contains(text(),'$')]")).getText().contains("110700")) // task 8 , 9
+			System.out.println("header displayed Total Recurring Reimbursement for all Patients Per Month to be $11070");
+		else
+			System.out.println("header not displayed Total Recurring Reimbursement for all Patients Per Month to be $11070");
+		Thread.sleep(5000);      
+		driver.quit();
+	}
+
+}
